@@ -1,7 +1,7 @@
 {
   "name": "Calico",
   "manifest_version": 2,
-  "version": "1.0.0",
+  "version": "0.0.0.1",
   "description": "English word to katakana spelling",
   "background": { "scripts": [
       "jquery.min.js",
