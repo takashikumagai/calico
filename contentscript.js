@@ -122,45 +122,8 @@ document.addEventListener('visibilitychange', function () {
   }
 }, false)
 
-// function withOptionsSatisfied(e, do_stuff) {
-//   if (options.target_lang) {
-//     //respect 'translate only when alt pressed' option
-//     if (options.word_key_only && !show_popup_key_pressed) return
-
-//     //respect "don't translate these sites"
-//     if (disable_on_this_page) return
-
-//     do_stuff()
-//   }
-// }
-
-//$(document).on('mousestop', function(e) {
-//})
-
-$(document).click(function(e) {
-  return true
-})
-
 let show_popup_key_pressed = false
 $(document).keydown(function(e) {
-  // if (TransOver.modifierKeys[e.keyCode] == options.popup_show_trigger) {
-  //   show_popup_key_pressed = true
-
-  //       ...
-
-  //       const xy = { clientX: last_mouse_stop.x, clientY: last_mouse_stop.y }
-  //       last_translation = translation
-  //       showPopup(xy, TransOver.formatTranslation(translation, TransOverLanguages[response.tl].direction, response.sl, options))
-  //     })
-  //   }
-  // }
-
-  // text-to-speech on ctrl press
-  // if (!e.originalEvent.repeat && TransOver.modifierKeys[e.keyCode] == options.tts_key && options.tts && $('transover-popup').length > 0) {
-  //   debug('tts')
-  //   chrome.extension.sendRequest({handler: 'tts'})
-  // }
-
   // Hide tat popup on escape
   if (e.keyCode == 27) {
     removePopup('transover-type-and-translate-popup')
@@ -170,10 +133,6 @@ $(document).keydown(function(e) {
   // if (TransOver.modifierKeys[e.keyCode] == options.popup_show_trigger) {
   //   show_popup_key_pressed = false
   // }
-})
-
-$(document).mousemove(function(e) {
-  console.log('mousemove');
 })
 
 let timer25
@@ -289,26 +248,10 @@ window.addEventListener('message', function(e) {
     return
 
   // if (e.data.type == 'transoverTranslate') {
-  //   chrome.extension.sendRequest({handler: 'translate', word: e.data.text, sl: e.data.sl, tl: e.data.tl}, function(response) {
-  //     debug('tat response: ', response)
 
-  //     const translation = TransOver.deserialize(response.translation)
-
-  //     if (!translation) {
-  //       debug('tat skipping empty translation')
-  //       return
-  //     }
-
-  //     const e = { clientX: $(window).width(), clientY: 0 }
-  //     last_translation = translation
-  //     showPopup(e, TransOver.formatTranslation(translation, TransOverLanguages[response.tl].direction, response.sl, options))
-  //   })
   // } else if (e.data.type === 'toggle_disable_on_this_page') {
-  //   disable_on_this_page = e.data.disable_on_this_page
-  //   chrome.extension.sendRequest({ ... })
-  //   chrome.extension.sendRequest({handler: 'setIcon', disabled: disable_on_this_page})
-  //   removePopup('transover-type-and-translate-popup')
+
   // } else if (e.data.type === 'tat_close') {
-  //   removePopup('transover-type-and-translate-popup')
+
   // }
 })
