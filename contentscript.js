@@ -190,21 +190,11 @@ document.addEventListener('input', e => {
 
       currentCandidate = wordInKatakana;
 
-      //console.log(`client(X,Y): ${e.clientX}, ${e.clientY}`); -> undefined
-      //console.log(`target.style(left,top): ${e.target.style.left}, ${e.target.style.top}`); -> empty
-      //console.log(`e.target(left,top): ${e.target.left}, ${e.target.top}`); -> undefined
-      console.log(`target.offset(left,top): ${e.target.offsetLeft}, ${e.target.offsetTop}`);
-      //console.log(`currentTarget.offset(left,top): ${e.currentTarget.offsetLeft}, ${e.currentTarget.offsetTop}`); -> undefined
-      console.log(`parentNode.offset(left,top): ${e.target.parentNode.offsetLeft}, ${e.target.parentNode.offsetTop}`);
-      console.log(`parentNode.parentNode.offset(left,top): ${e.target.parentNode.parentNode.offsetLeft}, ${e.target.parentNode.parentNode.offsetTop}`);
-
       // Event.target is not guaranteed to be an HTML element but this seems to work
       const rect = e.target.getBoundingClientRect();
       console.log(`client rect xywh: ${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}`);
   
       const t = e.target;
-      // const x = t.offsetLeft + t.parentNode.offsetLeft + t.parentNode.parentNode.left;
-      // const y = t.offsetTop + t.parentNode.offsetTop + t.parentNode.parentNode.offsetTop;
       const expected_input_field_height = 36;
       const x = rect.x;
       const y = rect.y + expected_input_field_height;
