@@ -30,6 +30,7 @@
   "permissions": [ "https://clients5.google.com/*", "tabs" ],
   "web_accessible_resources": [
     "popup.html",
-    "popup.js"
+    "popup.js",
+    "english-to-katakana.json"
   ]
 }
