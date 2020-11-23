@@ -184,6 +184,10 @@ document.addEventListener('input', e => {
     let wordInKatakana = e2k[text];
     if(wordInKatakana != undefined) {
       console.log(`${text} -> ${wordInKatakana}`);
+
+      // Close the current popup window before displaying a new one
+      removePopup('transover-popup');
+
       currentCandidate = wordInKatakana;
 
       //console.log(`client(X,Y): ${e.clientX}, ${e.clientY}`); -> undefined
