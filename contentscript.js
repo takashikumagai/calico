@@ -72,7 +72,7 @@ function registerTransoverComponent(component) {
 let last_translation
 
 function showPopup(e, content) {
-  removePopup('transover-type-and-translate-popup')
+  //removePopup('transover-type-and-translate-popup')
 
   // Append the text box DOM to the root of the page DOM
   const $popup = createPopup('transover-popup')

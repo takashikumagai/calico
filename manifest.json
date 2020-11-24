@@ -2,7 +2,7 @@
   "name": "Calico",
   "manifest_version": 2,
   "version": "0.0.0.1",
-  "description": "English word to katakana spelling",
+  "description": "English to katakana typing assist tool",
   "background": { "scripts": [
       "jquery.min.js",
       "background.js"
