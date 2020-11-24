@@ -2,12 +2,6 @@ let englishToKatakanaLookupTable = null
 let focusedInputTarget = null;
 let currentCandidate = null;
 
-// let debug
-// if (process.env.NODE_ENV !== 'production') {
-//   debug = require('debug')('transover')
-// } else {
-//   debug = () => {}
-// }
 function debug(message) {
   console.log(message);
 }
