@@ -3,7 +3,7 @@ let focusedInputTarget = null;
 let currentCandidate = null;
 
 function debug(message) {
-  console.log(message);
+  //console.log(message);
 }
 
 let options
@@ -124,7 +124,7 @@ $(document).keydown(function(e) {
     removePopup('transover-type-and-translate-popup')
   }
 }).keyup(function(e) {
-  console.log('keyup')
+  debug('keyup')
   // if (TransOver.modifierKeys[e.keyCode] == options.popup_show_trigger) {
   //   show_popup_key_pressed = false
   // }
@@ -168,18 +168,18 @@ $(document).on('mousemove_without_noise', function(e){
 
 document.addEventListener('input', e => {
   focusedInputTarget = e.target;
-  console.log(`Input event: ${e.target.value}`);
+  debug(`Input event: ${e.target.value}`);
   let text = e.target.value;
   if(text === '') {
     removePopup('transover-popup');
   } else {
     if(englishToKatakanaLookupTable == null) {
-      console.log('Lookup table not loaded');
+      debug('Lookup table not loaded');
       return;
     }
     let wordInKatakana = englishToKatakanaLookupTable[text];
     if(wordInKatakana != undefined) {
-      console.log(`${text} -> ${wordInKatakana}`);
+      debug(`${text} -> ${wordInKatakana}`);
 
       // Close the current popup window before displaying a new one
       removePopup('transover-popup');
@@ -188,7 +188,7 @@ document.addEventListener('input', e => {
 
       // Event.target is not guaranteed to be an HTML element but this seems to work
       const rect = e.target.getBoundingClientRect();
-      console.log(`client rect xywh: ${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}`);
+      debug(`client rect xywh: ${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}`);
   
       const t = e.target;
       const expected_input_field_height = 36;
@@ -201,13 +201,13 @@ document.addEventListener('input', e => {
 });
 
 document.addEventListener('focusin', e => {
-  console.log('awww focusin');
+  debug('awww focusin');
   focusedInputTarget = null;
   currentCandidate = null;
 });
 
 document.addEventListener('focusout', e => {
-  console.log('awww focusout');
+  debug('awww focusout');
   focusedInputTarget = null;
   currentCandidate = null;
 });
@@ -239,7 +239,7 @@ chrome.runtime.onMessage.addListener(
       //   removePopup('transover-type-and-translate-popup')
       // }
     } else if (request == 'select-candidate-in-active-tab') {
-      console.log('received select-candidate-in-active-tab');
+      debug('received select-candidate-in-active-tab');
       if(focusedInputTarget != null) {
         focusedInputTarget.value = currentCandidate;
         currentCandidate = null;
