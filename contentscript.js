@@ -7,15 +7,6 @@ function debug(message) {
 }
 
 let options
-let disable_on_this_page
-
-function ignoreThisPage(options) {
-  const isBlacklisted = $.grep(options.except_urls, function(url) { return RegExp(url).test(window.location.href) }).length > 0
-  const isWhitelisted = $.grep(options.only_urls, function(url) { return RegExp(url).test(window.location.href) }).length > 0 ||
-    options.only_urls.length === 0
-
-  return isBlacklisted || !isWhitelisted
-}
 
 // Append the template DOM to the root element of document
 function createPopup(nodeType) {
