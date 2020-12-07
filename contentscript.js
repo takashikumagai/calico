@@ -166,20 +166,31 @@ $(document).on('mousemove_without_noise', function(e){
   }
 })
 
+function getLastWord(text) {
+  const words = text.split(/\s/);
+  if(0 < words.length) {
+    return words[words.length - 1];
+  } else {
+    return '';
+  }
+}
+
 document.addEventListener('input', e => {
   focusedInputTarget = e.target;
   debug(`Input event: ${e.target.value}`);
   let text = e.target.value;
-  if(text === '') {
+  const lastWord = getLastWord(text);
+  debug(`Last word: ${lastWord}`);
+  if(lastWord === '') {
     removePopup('transover-popup');
   } else {
     if(englishToKatakanaLookupTable == null) {
       debug('Lookup table not loaded');
       return;
     }
-    let wordInKatakana = englishToKatakanaLookupTable[text];
+    let wordInKatakana = englishToKatakanaLookupTable[lastWord];
     if(wordInKatakana != undefined) {
-      debug(`${text} -> ${wordInKatakana}`);
+      debug(`${lastWord} -> ${wordInKatakana}`);
 
       // Close the current popup window before displaying a new one
       removePopup('transover-popup');
@@ -241,7 +252,13 @@ chrome.runtime.onMessage.addListener(
     } else if (request == 'select-candidate-in-active-tab') {
       debug('received select-candidate-in-active-tab');
       if(focusedInputTarget != null) {
-        focusedInputTarget.value = currentCandidate;
+        const currentText = focusedInputTarget.value;
+        const lastWord = getLastWord(currentText);
+        const textBeforeLastWord =
+        focusedInputTarget.value.substring(
+          0,
+          currentText.length - lastWord.length);
+        focusedInputTarget.value = textBeforeLastWord + currentCandidate;
         currentCandidate = null;
         removePopup('transover-popup');
       }
