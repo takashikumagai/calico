@@ -121,7 +121,7 @@ let show_popup_key_pressed = false
 $(document).keydown(function(e) {
   // Hide tat popup on escape
   if (e.keyCode == 27) {
-    removePopup('transover-type-and-translate-popup')
+    removePopup('transover-popup')
   }
 }).keyup(function(e) {
   debug('keyup')
