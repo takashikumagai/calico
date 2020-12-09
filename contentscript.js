@@ -27,7 +27,7 @@ function removePopup(nodeType) {
 const templates = {}
 const templateIds = {
   'transover-popup': 'transover-popup-template',
-  'transover-type-and-translate-popup': 'transover-tat-popup-template'
+  // 'transover-type-and-translate-popup': 'transover-tat-popup-template'
 }
 
 /**
