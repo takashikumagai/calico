@@ -73,6 +73,8 @@ function showPopup(e, content) {
 
   $popup.on('transover-popup_content_updated', function() {
     const pos = calculatePosition(e.clientX, e.clientY, $popup)
+    // Note that template DOM appended to the body element has
+    // only one child element 'main'.
     $popup
       .each(function() {
         $(this.shadowRoot.querySelector('main')).hide()
@@ -200,6 +202,7 @@ document.addEventListener('input', e => {
       // Event.target is not guaranteed to be an HTML element but this seems to work
       const rect = e.target.getBoundingClientRect();
       debug(`client rect xywh: ${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}`);
+      debug(`selection start, end: ${e.selectionStart}, ${e.selectionEnd}`);
   
       const t = e.target;
       const expected_input_field_height = 36;
@@ -207,6 +210,8 @@ document.addEventListener('input', e => {
       const y = rect.y + expected_input_field_height;
       const xy = { clientX: x, clientY: y };
       showPopup(xy, wordInKatakana);
+    } else {
+      debug(`No katakana word found for ${lastWord}`);
     }
   }
 });
