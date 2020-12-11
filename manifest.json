@@ -27,7 +27,6 @@
       "description": "Select the currently focused candidate"
     }
   },
-  "permissions": [ "https://clients5.google.com/*", "tabs" ],
   "web_accessible_resources": [
     "popup.html",
     "popup.js",
