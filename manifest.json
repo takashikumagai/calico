@@ -22,7 +22,8 @@
     "select-candidate": {
       "suggested_key": {
         "default": "Alt+M",
-        "mac": "Command+Shift+M"
+        "windows": "Alt+M",
+        "mac": "Alt+M"
       },
       "description": "Select the currently focused candidate"
     }
