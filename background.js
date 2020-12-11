@@ -24,7 +24,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 chrome.commands.onCommand.addListener(function(command) {
   switch (command) {
   case 'select-candidate':
-    chrome.tabs.query({active: true}, ([activeTab]) => {
+    chrome.tabs.query({active: true, currentWindow: true}, ([activeTab]) => {
       chrome.tabs.sendMessage(activeTab.id, 'select-candidate-in-active-tab')
     })
     break
