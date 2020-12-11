@@ -1,3 +1,7 @@
+function bgLog(message) {
+  // console.log(message)
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   console.log('request received')
 
@@ -22,9 +26,12 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 // })
 
 chrome.commands.onCommand.addListener(function(command) {
+  bgLog(`Command: ${command}`)
   switch (command) {
   case 'select-candidate':
+    bgLog('Selecting current candidate')
     chrome.tabs.query({active: true, currentWindow: true}, ([activeTab]) => {
+      bgLog(`active tab: ${activeTab.id}`)
       chrome.tabs.sendMessage(activeTab.id, 'select-candidate-in-active-tab')
     })
     break
