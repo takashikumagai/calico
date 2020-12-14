@@ -1,6 +1,109 @@
 let englishToKatakanaLookupTable = null
 let focusedInputTarget = null;
 let currentCandidate = null;
+let parseTextAsRomanizedJapanese = true;
+
+const romajiToKanaTable = [
+  {
+    "a": "あ",
+    "i": "い",
+    "u": "う",
+    "e": "え",
+    "o": "お",
+  },
+  {
+    "ka": "か",
+    "ki": "き",
+    "ku": "く",
+    "ke": "け",
+    "ko": "こ",
+    "ga": "が",
+    "gi": "ぎ",
+    "gu": "ぐ",
+    "ge": "げ",
+    "go": "ご",
+    "sa": "さ",
+    "su": "す",
+    "se": "せ",
+    "so": "そ",
+    "za": "ざ",
+    "ji": "じ",
+    "zu": "ず",
+    "ze": "ぜ",
+    "zo": "ぞ",
+    "ta": "た",
+    "te": "て",
+    "to": "と",
+    "da": "だ",
+    "di": "ぢ",
+    "du": "づ",
+    "de": "で",
+    "do": "ど",
+    "ti": "てぃ",
+    "na": "な",
+    "ni": "に",
+    "nu": "ぬ",
+    "ne": "ね",
+    "no": "の",
+    "ha": "は",
+    "hi": "ひ",
+    "fu": "ふ",
+    "he": "へ",
+    "ho": "ほ",
+    "ba": "ば",
+    "bi": "び",
+    "bu": "ぶ",
+    "be": "べ",
+    "bo": "ぼ",
+    "ma": "ま",
+    "mi": "み",
+    "mu": "む",
+    "me": "め",
+    "mo": "も",
+    "ya": "や",
+    "yu": "ゆ",
+    "yo": "よ",
+    "ra": "ら",
+    "ri": "り",
+    "ru": "る",
+    "re": "れ",
+    "ro": "ろ",
+    "wa": "わ",
+    "wo": "を",
+    "wi": "うぃ",
+    "we": "うぇ",
+    "nn": "ん",
+  },
+  {
+    "kya": "きゃ",
+    "kyu": "きゅ",
+    "kyo": "きょ",
+    "shi": "し",
+    "sha": "しゃ",
+    "shu": "しゅ",
+    "sho": "しょ",
+    "she": "しぇ",
+    "chi": "ち",
+    "tsu": "つ",
+    "thi": "てぃ",
+    "cha": "ちゃ",
+    "chu": "ちゅ",
+    "cho": "ちょ",
+    "che": "ちぇ",
+    "nya": "にゃ",
+    "nyu": "にゅ",
+    "nyo": "にょ",
+    "hya": "ひゃ",
+    "hyu": "ひゅ",
+    "hyo": "ひょ",
+    "mya": "みゃ",
+    "myu": "みゅ",
+    "myo": "みょ",
+    "rya": "りゃ",
+    "ryu": "りゅ",
+    "ryo": "りょ"
+  }
+];
 
 function debug(message) {
   //console.log(message);
@@ -168,9 +271,28 @@ $(document).on('mousemove_without_noise', function(e){
   }
 })
 
+function changeToKana(text) {
+  if(englishToKatakanaLookupTable == null) {
+    debug('Lookup table not loaded');
+    return null;
+  }
+  let wordInKatakana = englishToKatakanaLookupTable[text];
+  if(wordInKatakana != undefined) {
+    return wordInKatakana;
+  } else if(shouldParseAsJapanese(text)
+   && parseTextAsRomanizedJapanese) {
+    const parsingResult = parseRomanizedJapaneseText(text);
+    // We may have got some kana sequence as a result of parsing the word
+    // as Romanized Japanese; we can show this as a suggestion
+    return parsingResult;
+  } else {
+    return null;
+  }
+}
+
 function getLastWord(text) {
-  const words = text.split(/\s/);
-  if(0 < words.length) {
+  const words = text.match(/[A-Za-z]+$/);
+  if(words) {
     return words[words.length - 1];
   } else {
     return '';
@@ -186,18 +308,14 @@ document.addEventListener('input', e => {
   if(lastWord === '') {
     removePopup('transover-popup');
   } else {
-    if(englishToKatakanaLookupTable == null) {
-      debug('Lookup table not loaded');
-      return;
-    }
-    let wordInKatakana = englishToKatakanaLookupTable[lastWord];
-    if(wordInKatakana != undefined) {
-      debug(`${lastWord} -> ${wordInKatakana}`);
+    textInKatakana = changeToKana(lastWord);
+    if(textInKatakana != null) {
+      debug(`${lastWord} -> ${textInKatakana}`);
 
       // Close the current popup window before displaying a new one
       removePopup('transover-popup');
 
-      currentCandidate = wordInKatakana;
+      currentCandidate = textInKatakana;
 
       // Event.target is not guaranteed to be an HTML element but this seems to work
       const rect = e.target.getBoundingClientRect();
@@ -209,7 +327,7 @@ document.addEventListener('input', e => {
       const x = rect.x;
       const y = rect.y + expected_input_field_height;
       const xy = { clientX: x, clientY: y };
-      showPopup(xy, wordInKatakana);
+      showPopup(xy, textInKatakana);
     } else {
       debug(`No katakana word found for ${lastWord}`);
     }
@@ -270,6 +388,84 @@ chrome.runtime.onMessage.addListener(
     }
   }
 )
+
+function includeNonRomanizedJapaneseSequence(word) {
+  return word.includes('the')
+  || word.includes('q')
+  || word.match(/c[aeiou]/)
+  || word.match(/[bcdfgjklmnpqrstvwxyz]$/)
+}
+
+// Note
+// This old-fashioned way of checking for uppercase seems to work
+// if('A' <= text[0] && text[0] <= 'Z') {...}
+// But regex is more readable and is preferred.
+function shouldParseAsJapanese(text) {
+  if(text === null || text === '') {
+    return false;
+  }
+
+  if(text[0].match(/[A-Z]/)) {
+    // Begins with an uppercase alphabet
+    console.log('uppercase');
+    return false;
+  } else if(includeNonRomanizedJapaneseSequence(text)) {
+    console.log('nrj sequence');
+    return false;
+  }
+  else {
+    let match = /[bcdfgjklmnpqrstvwxzh][bcdfgjklmnpqrstvwxz]/i.exec(text);
+    if(match) {
+      const index = match.index;
+      if(text[index] != text[index+1]
+       && text.substring(index,index+2) != 'ts'
+       && text.substring(index,index+2) != 'sh'
+       && text.substring(index,index+2) != 'ch') {
+        // 2 consecutive consonant letters (except h or y) that are not the same
+        console.log('consonant cluster');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+}
+
+function parseRomanizedJapaneseText(text) {
+  let kanaText = '';
+  let pos = 0;
+  while(pos < text.length) {
+
+    if( pos < text.length - 1
+    && text[pos].match(/[bcdfghjklmprstvwxyz]/)
+    && (text[pos] === text[pos+1])) {
+      kanaText += 'っ';
+      pos += 1;
+      continue;
+    }
+
+    let i = 1;
+    let converted = false;
+    for(table of romajiToKanaTable) {
+      const chars = text.substring(pos, pos+i);
+      let kana = table[chars];
+      if(kana) {
+        kanaText += kana;
+        pos += i;
+        converted = true;
+        break;
+      }
+      i += 1;
+    }
+    if(!converted) {
+      kanaText += text.substring(pos);
+      break;
+    }
+  }
+  return kanaText;
+}
 
 $(function() {
   registerTransoverComponent('popup')
