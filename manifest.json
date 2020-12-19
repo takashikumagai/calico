@@ -26,6 +26,14 @@
         "mac": "Alt+M"
       },
       "description": "Select the currently focused candidate"
+    },
+    "toggle-active": {
+      "suggested_key": {
+        "default": "Alt+O",
+        "windows": "Alt+O",
+        "mac": "Alt+O"
+      },
+      "description": "Toggles the active/inactive state of the extension"
     }
   },
   "web_accessible_resources": [
