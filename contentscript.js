@@ -337,6 +337,8 @@ document.addEventListener('input', e => {
       showPopup(xy, textInKatakana);
     } else {
       debug(`No katakana word found for ${lastWord}`);
+      removePopup('transover-popup');
+      currentCandidate = null;
     }
   }
 });
@@ -384,7 +386,7 @@ chrome.runtime.onMessage.addListener(
       // }
     } else if (message.command == 'select-candidate-in-active-tab') {
       debug('received select-candidate-in-active-tab');
-      if(focusedInputTarget != null) {
+      if(focusedInputTarget != null && currentCandidate != null) {
         const currentText = focusedInputTarget.value;
         const lastWord = getLastWord(currentText);
         const textBeforeLastWord =
