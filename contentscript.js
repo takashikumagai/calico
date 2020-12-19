@@ -2,6 +2,7 @@ let englishToKatakanaLookupTable = null
 let focusedInputTarget = null;
 let currentCandidate = null;
 let parseTextAsRomanizedJapanese = true;
+let isActive = false; // Copy of isActive in the background script
 
 const romajiToKanaTable = [
   {
@@ -302,6 +303,12 @@ function getLastWord(text) {
 document.addEventListener('input', e => {
   focusedInputTarget = e.target;
   debug(`Input event: ${e.target.value}`);
+
+  if(!isActive) {
+    // The extension is not active right now. Do nothing and return
+    return;
+  }
+
   let text = e.target.value;
   const lastWord = getLastWord(text);
   debug(`Last word: ${lastWord}`);
@@ -347,10 +354,13 @@ document.addEventListener('focusout', e => {
 });
 
 chrome.runtime.onMessage.addListener(
-  function(request) {
+  function(message) {
+    debug(message)
     if (window != window.top) return
-
-    if (request == 'open_type_and_translate') {
+    if(!message.command) {
+      return
+    }
+    if (message.command == 'open_type_and_translate') {
       // if ($('transover-type-and-translate-popup').length == 0) {
       //   chrome.extension.sendRequest({handler: 'get_last_tat_sl_tl'}, function(response) {
       //     const $popup = createPopup('transover-type-and-translate-popup')
@@ -372,7 +382,7 @@ chrome.runtime.onMessage.addListener(
       // else {
       //   removePopup('transover-type-and-translate-popup')
       // }
-    } else if (request == 'select-candidate-in-active-tab') {
+    } else if (message.command == 'select-candidate-in-active-tab') {
       debug('received select-candidate-in-active-tab');
       if(focusedInputTarget != null) {
         const currentText = focusedInputTarget.value;
@@ -384,6 +394,16 @@ chrome.runtime.onMessage.addListener(
         focusedInputTarget.value = textBeforeLastWord + currentCandidate;
         currentCandidate = null;
         removePopup('transover-popup');
+      }
+    } else if (message.command == 'update-extension-state') {
+      console.log(`New active state: ${message.isActive}`);
+      if(message.isActive == undefined) {
+        console.log('The message does not have isActive key; sanity check failed');
+      } else {
+        isActive = message.isActive;
+        if(!message.isActive) {
+          removePopup('transover-popup');
+        }
       }
     }
   }
@@ -471,6 +491,11 @@ $(function() {
   registerTransoverComponent('popup')
   //registerTransoverComponent('tat_popup')
   loadEnglishToKatakanaLookupTable();
+
+  chrome.runtime.sendMessage({type: "get-extension-state"}, (response) => {
+    console.log(`setting the isActive value: ${response.isActive}`);
+    isActive = response.isActive;
+  });
 })
 
 window.addEventListener('message', function(e) {
