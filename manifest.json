@@ -4,7 +4,6 @@
   "version": "0.0.0.1",
   "description": "English to katakana typing assist tool",
   "background": { "scripts": [
-      "jquery.min.js",
       "background.js"
     ]
   },
