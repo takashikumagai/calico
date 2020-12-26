@@ -310,6 +310,26 @@ document.addEventListener('input', e => {
   }
 
   let text = e.target.value;
+  if(text == undefined) {
+    // In text boxes such as those used for composing message body of an email,
+    // e.target.value is set to 'undefined'
+    // Instead, the text is stored as the text content
+    debug('e.target.value is falsy. Trying e.target.textContent')
+    text = e.target.innerText;
+    if(text == undefined) {
+      debug('Text not found either in value or textContent');
+      return;
+    }
+  }
+
+  if(text == '') {
+    // When the entire text is deleted, it will get here.
+    // Note that an empty string is falsy so (!text) will also catch it
+    debug('empty string; returning');
+    removePopup('transover-popup');
+    return;
+  }
+
   const lastWord = getLastWord(text);
   debug(`Last word: ${lastWord}`);
   if(lastWord === '') {
@@ -387,13 +407,32 @@ chrome.runtime.onMessage.addListener(
     } else if (message.command == 'select-candidate-in-active-tab') {
       debug('received select-candidate-in-active-tab');
       if(focusedInputTarget != null && currentCandidate != null) {
-        const currentText = focusedInputTarget.value;
+        // const currentText = focusedInputTarget.value;
+        const currentText = (focusedInputTarget.value != undefined) ?
+          focusedInputTarget.value : focusedInputTarget.innerText;
         const lastWord = getLastWord(currentText);
         const textBeforeLastWord =
-        focusedInputTarget.value.substring(
+        currentText.substring(
           0,
           currentText.length - lastWord.length);
-        focusedInputTarget.value = textBeforeLastWord + currentCandidate;
+
+        if(0 <= focusedInputTarget.selectionStart && focusedInputTarget.selectionStart < currentText.length) {
+          const textAfterCaret = currentText.substring(
+            focusedInputTarget.selectionStart
+          )
+        }
+
+        // Update the text
+        const text = textBeforeLastWord + currentCandidate;
+        debug(`Updating text: ${text}`);
+        if(focusedInputTarget.value != undefined) {
+          focusedInputTarget.value = text;
+        } else if(focusedInputTarget.innerText != undefined) {
+          focusedInputTarget.innerText = text;
+        } else {
+          console.warn('Both value and innerText are undefined. Unable to update text');
+        }
+
         currentCandidate = null;
         removePopup('transover-popup');
       }
